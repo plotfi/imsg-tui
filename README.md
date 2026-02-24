@@ -25,3 +25,10 @@ You will need imsg to be in your path, or provide the path with `--imsg-path`
 
 Lastly, you will need to give permissions so that imsg can have access to your messages.
 It will prompt for this; it is advised that you only give Terminal.app permissions and run this in tmux so that ssh-agent isnt able to directly have access.
+
+
+# Why?
+
+1) I like to separate home and personal without using separate devices, ssh happens to be a good way to do this.
+2) I sometimes use Linux on my macbook; it's nice to have my chats available.
+3) I don't really like the desktop experience for most chat alternatives, for example with with Discord I've started using Discordo (https://github.com/ayn2op/discordo)... I'll probably use steipete's wacli/signal-cli to make a similar TUIs someday.
