@@ -29,6 +29,6 @@ It will prompt for this; it is advised that you only give Terminal.app permissio
 
 # Why?
 
-1) I like to separate home and personal without using separate devices, ssh happens to be a good way to do this.
+1) I like to separate home and work without using separate devices, ssh happens to be a good way to do this.
 2) I sometimes use Linux on my macbook; it's nice to have my chats available.
 3) I don't really like the desktop experience for most chat alternatives, for example with with Discord I've started using Discordo (https://github.com/ayn2op/discordo)... I'll probably use steipete's wacli/signal-cli to make a similar TUIs someday.
