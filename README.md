@@ -21,3 +21,7 @@ python3 imsg-tui.py
 ```
 
 You will need imsg to be in your path, or provide the path with `--imsg-path` 
+
+
+Lastly, you will need to give permissions so that imsg can have access to your messages.
+It will prompt for this; it is advised that you only give Terminal.app permissions and run this in tmux so that ssh-agent isnt able to directly have access.
