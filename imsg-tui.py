@@ -8,6 +8,8 @@ from __future__ import annotations
 import argparse, curses, json, subprocess, threading, time
 from datetime import datetime
 
+from contacts import normalize_phone, parse_vcf, resolve_name
+
 SIDEBAR_W = 28
 POLL_SEC = 1
 
@@ -31,7 +33,8 @@ def imsg(bin, *args):
     except Exception:
         return []
 
-def main(stdscr, bin):
+def main(stdscr, bin, contacts=None):
+    contacts = contacts or {}
     curses.curs_set(1); curses.use_default_colors()
     for i, c in enumerate([curses.COLOR_CYAN, curses.COLOR_GREEN, curses.COLOR_YELLOW, curses.COLOR_RED], 1):
         curses.init_pair(i, c, -1)
@@ -45,7 +48,8 @@ def main(stdscr, bin):
         nonlocal chats
         raw = imsg(bin, "chats", "--limit", CHAT_ROSTER_LIMIT, "--json")
         with lock:
-            chats = [{"id": c.get("id"), "name": c.get("name") or c.get("identifier","?"),
+            chats = [{"id": c.get("id"),
+                       "name": resolve_name(contacts, c.get("identifier","")) or c.get("name") or c.get("identifier","?"),
                        "identifier": c.get("identifier",""), "service": c.get("service",""),
                        "msgs": [], "rowid": 0, "unread": 0} for c in raw]
 
@@ -59,7 +63,8 @@ def main(stdscr, bin):
             if not txt: continue
             try: ts = datetime.fromisoformat(m["created_at"].replace("Z","+00:00")).strftime("%H:%M")
             except Exception: ts = "??:??"
-            who = "me" if m.get("is_from_me") else (m.get("sender") or chat["name"])
+            sender = m.get("sender") or chat["name"]
+            who = "me" if m.get("is_from_me") else (resolve_name(contacts, sender) or sender)
             msgs.append((ts, who, txt + load_history_dbg))
         msgs.reverse()
         with lock:
@@ -82,7 +87,8 @@ def main(stdscr, bin):
                     if not txt: continue
                     try: ts = datetime.fromisoformat(m["created_at"].replace("Z","+00:00")).strftime("%H:%M")
                     except Exception: ts = "??:??"
-                    who = "me" if m.get("is_from_me") else (m.get("sender") or c["name"])
+                    sender = m.get("sender") or c["name"]
+                    who = "me" if m.get("is_from_me") else (resolve_name(contacts, sender) or sender)
                     new.append((ts, who, txt + poll_loop_dbg))
                 if new:
                     with lock:
@@ -206,4 +212,7 @@ def main(stdscr, bin):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="iMessage TUI")
     p.add_argument("--imsg-path", default="imsg", help="Path to imsg binary")
-    curses.wrapper(main, p.parse_args().imsg_path)
+    p.add_argument("--vcf", default=None, help="Path to vCard (.vcf) file for contact name resolution")
+    args = p.parse_args()
+    vcf_contacts = parse_vcf(args.vcf) if args.vcf else {}
+    curses.wrapper(main, args.imsg_path, vcf_contacts)
