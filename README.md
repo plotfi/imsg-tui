@@ -15,7 +15,7 @@ brew install steipete/tap/imsg
 then
 
 ```
-https://github.com/plotfi/imsg-tui
+git clone https://github.com/plotfi/imsg-tui
 cd imsg-tui
 python3 imsg-tui.py
 ```
